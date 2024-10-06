@@ -25,7 +25,7 @@ export class User {
   @OneToMany(() => Blog, (blog) => blog.author)
   blogs: Blog[]
 
-  @Column()
+  @Column({default: false})
   isAdmin: boolean
 
   @BeforeInsert()

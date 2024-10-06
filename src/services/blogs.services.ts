@@ -24,12 +24,17 @@ class BlogService {
     content: string,
   ): Promise<Blog> {
     const blog = await this.blogRepo.findOne({
-      where: { id: blogId }
-
+      where: { id: blogId },
+      relations: ['author'],
     })
 
     if (!blog) {
       throw new Error('Blog not found')
+    }
+    const user = await this.userRepo.findOne({where: { id: author }})
+
+    if (blog.author.id !== author && user?.isAdmin == false) {
+      throw new Error('Unauthorized')
     }
 
     blog.title = title

@@ -54,31 +54,34 @@ export const deleteBlogById = async (req: Request, res: Response) => {
   }
 }
 
-
 export const fetchBlogs = async (req: Request, res: Response) => {
   try {
     // Parse query parameters for pagination
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 10;
+    const page = parseInt(req.query.page as string) || 1
+    const limit = parseInt(req.query.limit as string) || 10
 
     // Fetch blogs using the service method
-    const blogs = await BlogService.fetchBlogs(page, limit);
+    const blogs = await BlogService.fetchBlogs(page, limit)
 
     // Format the blogs to include only necessary fields
     const formattedBlogs = blogs.map((blog) => ({
       id: blog.id,
       title: blog.title,
       content: blog.content,
-      author: blog.author ? { id: blog.author.id, name: blog.author.name } : null,
+      author: blog.author
+        ? { id: blog.author.id, name: blog.author.name }
+        : null,
       createdAt: blog.createdAt,
       updatedAt: blog.updatedAt,
-    }));
+    }))
 
     // Send the response with formatted blogs
-    return res.status(200).json({ blogs: formattedBlogs });
+    return res.status(200).json({ blogs: formattedBlogs })
   } catch (error) {
     // Handle errors gracefully
-    console.error(error);
-    return res.status(500).json({ message: 'An error occurred while fetching blogs.' });
+    console.error(error)
+    return res
+      .status(500)
+      .json({ message: 'An error occurred while fetching blogs.' })
   }
 }
