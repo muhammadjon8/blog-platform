@@ -1,5 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert } from 'typeorm'
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  BeforeInsert,
+  OneToMany,
+} from 'typeorm'
 import bcrypt from 'bcrypt'
+import { Blog } from './entity.blog'
 
 @Entity()
 export class User {
@@ -14,6 +21,12 @@ export class User {
 
   @Column()
   name: string
+
+  @OneToMany(() => Blog, (blog) => blog.author)
+  blogs: Blog[]
+
+  @Column()
+  isAdmin: boolean
 
   @BeforeInsert()
   async hashPassword() {
