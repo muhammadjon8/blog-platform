@@ -14,13 +14,13 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
       role: string
     }
 
-    // Attach user information to the request object
+    
     ;(req as any).user = {
       id: decoded.userId,
       role: decoded.role,
     }
 
-    next() // Proceed to the next middleware/route handler
+    next() 
   } catch (error) {
     return res.status(403).json({ message: 'Invalid Token' })
   }
