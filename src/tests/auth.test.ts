@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs'
-import { User } from '../entities/entity.user'
+import { User } from '../entities/user.entity'
 
 jest.mock('bcryptjs') // Mock bcrypt to avoid actual hashing during tests
 

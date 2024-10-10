@@ -9,6 +9,8 @@ app.use(express.json())
 const PORT = process.env.PORT || 3000
 dotenv.config()
 
+
+
 app.use('/auth', authRoutes)
 app.use("/blog", blogRoutes)
 

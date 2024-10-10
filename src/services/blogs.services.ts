@@ -1,5 +1,5 @@
-import { Blog } from '../entities/entity.blog'
-import { User } from '../entities/entity.user'
+import { Blog } from '../entities/blog.entity'
+import { User } from '../entities/user.entity'
 import { AppDataSource } from '../data-source'
 
 class BlogService {
@@ -31,7 +31,7 @@ class BlogService {
     if (!blog) {
       throw new Error('Blog not found')
     }
-    const user = await this.userRepo.findOne({where: { id: author }})
+    const user = await this.userRepo.findOne({ where: { id: author } })
 
     if (blog.author.id !== author && user?.isAdmin == false) {
       throw new Error('Unauthorized')
@@ -40,7 +40,7 @@ class BlogService {
     blog.title = title
     blog.content = content
     const isAuthor = await this.userRepo.findOne({ where: { id: author } })
-    if (isAuthor) { 
+    if (isAuthor) {
       blog.author = isAuthor
     }
 

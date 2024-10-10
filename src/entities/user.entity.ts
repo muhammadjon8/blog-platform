@@ -6,7 +6,8 @@ import {
   OneToMany,
 } from 'typeorm'
 import bcrypt from 'bcrypt'
-import { Blog } from './entity.blog'
+import { Blog } from './blog.entity'
+import { Comment } from './entity.comment'
 
 @Entity()
 export class User {
@@ -25,7 +26,10 @@ export class User {
   @OneToMany(() => Blog, (blog) => blog.author)
   blogs: Blog[]
 
-  @Column({default: false})
+  @OneToMany(() => Comment, (comment) => comment.user)
+  comments: Comment[]
+
+  @Column({ default: false })
   isAdmin: boolean
 
   @BeforeInsert()

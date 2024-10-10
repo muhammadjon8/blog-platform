@@ -1,5 +1,4 @@
-
-import { User } from '../entities/entity.user'
+import { User } from '../entities/user.entity'
 import { AppDataSource } from '../data-source'
 
 class AuthService {

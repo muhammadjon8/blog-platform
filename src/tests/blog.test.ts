@@ -1,5 +1,5 @@
 import { Blog } from '../entities/entity.blog'
-import { User } from '../entities/entity.user'
+import { User } from '../entities/user.entity'
 import { AppDataSource } from '../data-source'
 import blogsServices from '../services/blogs.services'
 
