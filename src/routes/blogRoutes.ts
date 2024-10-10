@@ -4,7 +4,7 @@ import {
   deleteBlogById,
   updateBlogById,
   getBlogs,
-  getBlogById, // Add this import
+  getBlogById,
 } from '../controllers/blog.controller'
 import { auth } from '../middlewares/auth.middleware'
 
