@@ -1,44 +1,27 @@
 import { Request, Response, NextFunction } from 'express'
-import { verifyToken, generateJwtToken, sendCookies } from '../utils/tokenUtils' // Adjust utility imports
+import jwt from 'jsonwebtoken'
 
-export async function auth(req: Request, res: Response, next: NextFunction) {
-  const refreshToken = req.cookies['refreshToken']
+export const auth = (req: Request, res: Response, next: NextFunction) => {
+  const token = req.cookies['refreshToken']
 
-  if (!refreshToken) {
-    throw new Error('Refresh token not found')
+  if (!token) {
+    return res.status(401).json({ message: 'Access Denied' })
   }
 
-  // Attempt to verify access token; if it doesn't exist, refresh the token
-  let accessTokenPayload: AuthTokenPayload | null = accessToken
-    ? verifyToken(accessToken)
-    : null
-
-  if (!accessTokenPayload) {
-    const refreshTokenPayload = verifyToken(refreshToken)
-    if (!refreshTokenPayload) {
-      throw new Error('Refresh token has expired')
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret') as {
+      userId: string
+      role: string
     }
 
-    const newAccessToken = generateJwtToken('15m', {
-      userId: refreshTokenPayload['userId'],
-    })
-    sendCookies(res, 'accessToken', newAccessToken, 15 * 60 * 1000) // Set access token cookie
-
-    accessTokenPayload = verifyToken(newAccessToken) // Verify new access token
-    if (!accessTokenPayload) {
-      throw new Error('Error generating new access token')
+    // Attach user information to the request object
+    ;(req as any).user = {
+      id: decoded.userId,
+      role: decoded.role,
     }
-  }
 
-  // Fetch user based on userId in access token payload
-  const user = await UsersRepository.getOneById({
-    id: accessTokenPayload['userId'],
-  })
-  if (!user) {
-    throw new Error('User does not exist')
+    next() // Proceed to the next middleware/route handler
+  } catch (error) {
+    return res.status(403).json({ message: 'Invalid Token' })
   }
-
-  // Attach user info to request object
-  req.user = { id: user.id, role: user.role }
-  next() // Proceed to the next middleware or route handler
 }
