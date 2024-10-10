@@ -1,20 +1,20 @@
 import { Blog } from '../entities/blog.entity'
 import { User } from '../entities/user.entity'
 import { AppDataSource } from '../data-source'
+import { BlogsSearchParamsDto } from '../dtos/blog.searchparams.dto'
+import { FindManyOptions } from 'typeorm'
+import { CreateBlogDto } from '../dtos/createBlog.dto'
 
 class BlogService {
   private userRepo = AppDataSource.getRepository(User)
   private blogRepo = AppDataSource.getRepository(Blog)
 
-  async createBlog(userId: number, title: string, content: string) {
-    const author = await this.userRepo.findOne({ where: { id: userId } })
-
-    if (!author) {
-      throw new Error('User not found')
-    }
-
-    const blog = this.blogRepo.create({ title, content, author })
-    return this.blogRepo.save(blog)
+  async createBlog(blogDto: CreateBlogDto, authorId: User): Promise<Blog> {
+    return await this.blogRepo.save({
+      author: authorId,
+      content: blogDto.content,
+      title: blogDto.title,
+    })
   }
 
   async updateBlog(
@@ -60,20 +60,26 @@ class BlogService {
     await this.blogRepo.delete(blogId)
   }
 
-  async fetchBlogs(page: number, limit: number): Promise<Blog[]> {
-    const blogRepo = AppDataSource.getRepository(Blog)
+  async getBlogs(searchParams: BlogsSearchParamsDto): Promise<Blog[]> {
+    const page = searchParams.page || 1
+    const limit = searchParams.limit || 10
 
-    console.log(`Fetching blogs: page=${page}, limit=${limit}`) // Log pagination parameters
-
-    const blogs = await blogRepo.find({
-      take: limit,
+    const options: FindManyOptions<Blog> = {
       skip: (page - 1) * limit,
-      relations: ['author'], // Load related author data
-    })
+      take: limit,
+    }
 
-    console.log(`Fetched blogs: ${JSON.stringify(blogs)}`) // Log fetched blogs
+    return await this.blogRepo.find(options)
+  }
 
-    return blogs
+  async getBlog(id: string): Promise<Blog> {
+    const blog = await this.blogRepo.findOne({ where: { id: +id } })
+
+    if (!blog) {
+      throw new Error('Blog not found')
+    }
+
+    return blog
   }
 }
 

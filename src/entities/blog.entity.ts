@@ -9,7 +9,6 @@ import {
   OneToMany,
 } from 'typeorm'
 import { User } from './user.entity'
-import { Comment } from './entity.comment'
 
 @Entity()
 export class Blog {
@@ -25,9 +24,6 @@ export class Blog {
   @ManyToOne(() => User, (user) => user.blogs, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
   author: User
-
-  @OneToMany(() => Comment, (comment) => comment.blogPost)
-  comments: Comment[]
 
   @CreateDateColumn()
   createdAt: Date
