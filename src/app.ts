@@ -3,11 +3,14 @@ import { AppDataSource } from './data-source'
 import dotenv from 'dotenv'
 import blogRoutes from "./routes/blogRoutes"
 import authRoutes from './routes/authRoutes'
+import cookieParser from "cookie-parser"
 
 const app = express()
 app.use(express.json())
 const PORT = process.env.PORT || 3000
 dotenv.config()
+
+app.use(cookieParser())
 
 
 

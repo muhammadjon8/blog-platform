@@ -1,27 +1,44 @@
 import { Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
 
-export const auth = (req: Request, res: Response, next: NextFunction) => {
-  const token = req.cookies['refreshToken']
+interface UserPayload {
+  userId: string
+  role: string
+}
+
+interface AuthenticatedRequest extends Request {
+  user?: {
+    id: string
+    role: string
+  }
+}
+
+export const auth = (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+): void => {
+  const token = req.cookies?.refreshToken
 
   if (!token) {
-    return res.status(401).json({ message: 'Access Denied' })
+    res.status(401).json({ message: 'Access Denied' })
+    return 
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret') as {
-      userId: string
-      role: string
-    }
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET || 'secret',
+    ) as UserPayload
 
-    
-    ;(req as any).user = {
+    req.user = {
       id: decoded.userId,
       role: decoded.role,
     }
 
     next() 
   } catch (error) {
-    return res.status(403).json({ message: 'Invalid Token' })
+    res.status(403).json({ message: 'Invalid Token' })
+    return 
   }
 }
