@@ -1,17 +1,16 @@
-
 import bcrypt from 'bcryptjs'
-import { User } from '../entities/User'
+import { User } from '../entities/user.entity'
 
 jest.mock('bcryptjs') // Mock bcrypt to avoid actual hashing during tests
 
 describe('User Entity', () => {
   it('should hash password before saving', async () => {
     const user = new User()
-    user.password = 'plainPassword';
+    user.password = 'plainPassword'
 
     // Mock bcrypt.hash to return a hashed password
-    (bcrypt.hash as jest.Mock).mockResolvedValue('hashedPassword') // Remove the semicolon
-
+    ;(bcrypt.hash as jest.Mock).mockResolvedValue('hashedPassword') // Remove the semicolon
+    3
     await user.hashPassword() // Call the hashPassword method
 
     expect(bcrypt.hash).toHaveBeenCalledWith('plainPassword', 10)
