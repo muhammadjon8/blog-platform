@@ -31,12 +31,6 @@ class BlogService {
     if (!blog) {
       throw new Error('Blog not found')
     }
-    const user = await this.userRepo.findOne({ where: { id: author } })
-
-    if (blog.author.id !== author && user?.isAdmin == false) {
-      throw new Error('Unauthorized')
-    }
-
     blog.title = title
     blog.content = content
     const isAuthor = await this.userRepo.findOne({ where: { id: author } })

@@ -2,10 +2,7 @@ import BlogService from '../services/blogs.services'
 import { BlogsSearchParamsDto } from '../dtos/blog.searchparams.dto'
 
 export const createBlog = async (req: any, res: any) => {
-  console.log('Request Body:', req.body.title)
   const { title, content, author } = req.body
-
-  console.log(content, title, author)
 
   try {
     if (!title || !content || !author) {
