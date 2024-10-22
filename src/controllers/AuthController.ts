@@ -4,7 +4,7 @@ import AuthServices from '../services/AuthServices'
 import { sendCookies } from '../utils/sendCookie'
 
 const generateToken = (userId: number, isAdmin: boolean) => {
-  return jwt.sign({ userId, isAdmin }, process.env.JWT_SECRET!, { expiresIn: '1h' })
+  return jwt.sign({ userId: userId, isAdmin: isAdmin }, process.env.JWT_SECRET!, { expiresIn: '1h' })
 }
 
 export const signup = async (req: Request, res: Response) => {
