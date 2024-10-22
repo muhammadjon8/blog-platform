@@ -3,13 +3,13 @@ import jwt from 'jsonwebtoken'
 
 interface UserPayload {
   userId: string
-  role: string
+  isAdmin: boolean
 }
 
 interface AuthenticatedRequest extends Request {
   user?: {
     id: string
-    role: string
+    isAdmin: boolean
   }
 }
 
@@ -33,7 +33,7 @@ export const auth = (
 
     req.user = {
       id: decoded.userId,
-      role: decoded.role,
+      isAdmin: decoded.isAdmin,
     }
 
     next() 
