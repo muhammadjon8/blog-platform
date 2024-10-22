@@ -7,6 +7,7 @@ import {
 } from 'typeorm'
 import bcrypt from 'bcrypt'
 import { Blog } from './blog.entity'
+import { Comment } from './comment.entity'
 
 @Entity()
 export class User {
@@ -40,4 +41,7 @@ export class User {
   async validatePassword(password: string): Promise<boolean> {
     return bcrypt.compare(password, this.password)
   }
+
+  @OneToMany(() => Comment, (comment) => comment.user)
+  comments: Comment[]
 }
