@@ -1,17 +1,17 @@
 import BlogService from '../services/blogs.services'
 import { BlogsSearchParamsDto } from '../dtos/blog.searchparams.dto'
 
-export const createBlog = async (req: any, res: any) => {
-  const { title, content, author } = req.body
 
+export const createBlog = async (req: any, res: any) => {
   try {
-    if (!title || !content || !author) {
-      return res
-        .status(400)
-        .json({ message: 'Title, content, and userId are required' })
+    const { title, content } = req.body
+
+    if (!title || !content) {
+      return res.status(400).json({ message: 'Title and content are required' })
     }
 
-    const blog = await BlogService.createBlog(req.body, author)
+    
+    const blog = await BlogService.createBlog(req, req.body)
     return res
       .status(201)
       .json({ message: 'Blog created successfully', data: blog })
@@ -20,23 +20,20 @@ export const createBlog = async (req: any, res: any) => {
   }
 }
 
-export const updateBlogById = async (req: any, res: any) => {
-  const { title, content, author } = req.body
-  const { blogId } = req.params
 
+export const updateBlogById = async (req: any, res: any) => {
   try {
-    if (!blogId || !title || !content || !author) {
+    const { title, content } = req.body
+    const { blogId } = req.params
+
+    if (!blogId || !title || !content) {
       return res
         .status(400)
-        .json({ message: 'Blog ID, title, content, and author are required' })
+        .json({ message: 'Blog ID, title, and content are required' })
     }
 
-    const blog = await BlogService.updateBlog(
-      Number(blogId),
-      author,
-      title,
-      content,
-    )
+    
+    const blog = await BlogService.updateBlog(req, +blogId, title, content)
     return res
       .status(200)
       .json({ message: 'Blog updated successfully', data: blog })
@@ -57,7 +54,7 @@ export const deleteBlogById = async (req: any, res: any) => {
       return res.status(400).json({ message: 'Blog ID is required' })
     }
 
-    await BlogService.deleteBlog(Number(blogId))
+    await BlogService.deleteBlog(req, +blogId)
     return res.status(204).json({ message: 'Blog deleted successfully' })
   } catch (error) {
     if ((error as any).message === 'Blog not found') {
@@ -88,6 +85,7 @@ export const getBlogById = async (req: any, res: any) => {
     if (!id) {
       return res.status(400).json({ message: 'Blog ID is required' })
     }
+
     const blog = await BlogService.getBlog(id)
     return res
       .status(200)
