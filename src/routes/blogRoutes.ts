@@ -20,8 +20,8 @@ router.get('/fetch/:id', checkAdmin, getBlogById)
 
 //comment route
 router.post('/:blogId/comments', auth, createComment)
-router.get('/:blogId/comments', getComments)
+router.get('/:blogId/comments',checkAdmin, getComments)
 router.put('/:blogId/comments/:commentId', auth, updateComment)
-router.delete('/:blogId/comments/:commentId', auth, deleteComment)
+router.delete('/:blogId/comments/:commentId', auth, deleteComment) 
 
 export default router

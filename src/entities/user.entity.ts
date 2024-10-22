@@ -29,6 +29,9 @@ export class User {
   @Column({ default: false })
   isAdmin: boolean
 
+  @Column({ default: 'user' })
+  role: string
+
   @OneToMany(() => Comment, (comment) => comment.author)
   comments: Comment[]
 

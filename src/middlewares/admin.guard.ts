@@ -6,7 +6,7 @@ const jwtSecret = process.env.JWT_SECRET || 'your_secret_key'
 interface AuthenticatedRequest extends Request {
   user?: {
     id: string
-    isAdmin: boolean
+    role: string
   }
 }
 
@@ -24,16 +24,16 @@ export const checkAdmin = (
   try {
     // Decode the token and cast it to a known type
     const decoded = jwt.verify(token, jwtSecret) as {
-      userId: string
-      isAdmin: boolean
+      userId: string,
+      role: string
     }
 
     req.user = {
       id: decoded.userId,
-      isAdmin: decoded.isAdmin,
+      role: decoded.role,
     }
 
-    if (!decoded.isAdmin) {
+    if (!decoded.role) {
       return res
         .status(403)
         .json({ message: 'Access denied, admin role required' })
