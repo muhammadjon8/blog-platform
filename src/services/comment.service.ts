@@ -33,6 +33,7 @@ export class CommentService {
   async createComment(
     req: Request,
     createCommentDto: CreateCommentDto,
+    blogId: number,
   ): Promise<Comment> {
     const authorId = await this.extractUserIdFromToken(req)
 
@@ -42,7 +43,7 @@ export class CommentService {
     }
 
     const blog = await this.blogRepo.findOne({
-      where: { id: createCommentDto.blogId },
+      where: { id: blogId },
     })
     if (!blog) {
       throw new Error('Blog not found')
@@ -83,17 +84,14 @@ export class CommentService {
     return comment
   }
 
-  async deleteComment(
-    req: Request,
-    blogId: number,
-    commentId: number 
-  ) {
+  async deleteComment(blogId: number, commentId: number) {
     const comment = await this.commentRepo.findOne({
       where: { id: commentId, blog: { id: blogId } },
     })
+
     if (!comment) {
       throw new Error('Comment not found')
     }
-    return await this.commentRepo.delete(comment)
+    await this.commentRepo.delete({ id: commentId, blog: { id: blogId } })
   }
 }

@@ -1,4 +1,4 @@
-import { Blog } from '../entities/entity.blog'
+import { Blog } from '../entities/blog.entity'
 import { User } from '../entities/user.entity'
 import { AppDataSource } from '../data-source'
 import blogsServices from '../services/blogs.services'

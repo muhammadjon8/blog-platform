@@ -4,7 +4,4 @@ export class CreateCommentDto{
     @IsString()
     content: string;
 
-    @IsNumber()
-    blogId: number;
-
 }
