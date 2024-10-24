@@ -5,7 +5,7 @@ import { BlogsSearchParamsDto } from '../dtos/blog.searchparams.dto'
 import { FindManyOptions } from 'typeorm'
 import { CreateBlogDto } from '../dtos/createBlog.dto'
 import * as jwt from 'jsonwebtoken'
-import { Request } from 'express' 
+import { Request } from 'express'
 import CustomJwtPayload from '../utils/customJwtPayload'
 
 class BlogService {
@@ -13,7 +13,7 @@ class BlogService {
   private blogRepo = AppDataSource.getRepository(Blog)
 
   private async extractUserIdFromToken(req: Request): Promise<number> {
-    const jwtSecret = process.env.JWT_SECRET || "secret"
+    const jwtSecret = process.env.JWT_SECRET || 'secret'
 
     const token = req.cookies?.refreshToken
     if (!token) {
@@ -29,7 +29,7 @@ class BlogService {
   }
 
   async createBlog(req: Request, blogDto: CreateBlogDto): Promise<Blog> {
-    const authorId = await this.extractUserIdFromToken(req) 
+    const authorId = await this.extractUserIdFromToken(req)
 
     const author = await this.userRepo.findOne({ where: { id: authorId } })
     if (!author) {
@@ -40,6 +40,7 @@ class BlogService {
       author,
       content: blogDto.content,
       title: blogDto.title,
+      tags: blogDto.tags,
     })
 
     return await this.blogRepo.save(newBlog)
@@ -51,7 +52,7 @@ class BlogService {
     title: string,
     content: string,
   ): Promise<Blog> {
-    const authorId = await this.extractUserIdFromToken(req) 
+    const authorId = await this.extractUserIdFromToken(req)
 
     const blog = await this.blogRepo.findOne({
       where: { id: blogId },
@@ -73,7 +74,7 @@ class BlogService {
   }
 
   async deleteBlog(req: Request, blogId: number): Promise<void> {
-    const authorId = await this.extractUserIdFromToken(req) 
+    const authorId = await this.extractUserIdFromToken(req)
 
     const blog = await this.blogRepo.findOne({
       where: { id: blogId },
@@ -91,7 +92,6 @@ class BlogService {
     await this.blogRepo.delete(blogId)
   }
 
-  
   async getBlogs(searchParams: BlogsSearchParamsDto): Promise<Blog[]> {
     const page = searchParams.page || 1
     const limit = searchParams.limit || 10
@@ -104,7 +104,6 @@ class BlogService {
     return await this.blogRepo.find(options)
   }
 
-
   async getBlog(id: string): Promise<Blog> {
     const blog = await this.blogRepo.findOne({ where: { id: +id } })
 
@@ -113,6 +112,44 @@ class BlogService {
     }
 
     return blog
+  }
+
+  async getBlogsBySearchParams(
+    page: number = 1,
+    limit: number = 10,
+    searchParams?: { title?: string; tags?: string[]; content?: string },
+  ) {
+    const query = this.blogRepo.createQueryBuilder('blog')
+
+    if (searchParams?.title) {
+      query.andWhere('blog.title ILIKE :title', {
+        title: `%${searchParams.title}%`,
+      })
+    }
+
+    if (searchParams?.tags && searchParams?.tags.length > 0) {
+      query.andWhere('blog.tags @> :tags', {
+        tags: JSON.stringify(searchParams?.tags),
+      })
+    }
+
+    if (searchParams?.content) {
+      query.andWhere('blog.content ILIKE :content', {
+        content: `%${searchParams.content}%`,
+      })
+    }
+
+    const [blogs, total] = await query
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getManyAndCount()
+
+    return {
+      data: blogs,
+      total,
+      page,
+      limit,
+    }
   }
 }
 

@@ -1,14 +1,15 @@
-import { IsNumber, IsString, MaxLength, MinLength } from "class-validator";
+import { IsArray, IsNumber, IsString, MaxLength, MinLength } from "class-validator";
 
-export class CreateBlogDto{
-    @IsString()
-    title: string;
+export class CreateBlogDto {
+  @IsString()
+  title: string
 
-    @IsString()
-    @MinLength(10)
-    @MaxLength(500)
-    content: string;
+  @IsString()
+  @MinLength(10)
+  @MaxLength(500)
+  content: string
 
-    @IsNumber()
-    author: number;
+  @IsArray()
+  @IsString({ each: true })
+  tags: string[]
 }

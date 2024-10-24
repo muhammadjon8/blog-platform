@@ -5,6 +5,7 @@ import {
   updateBlogById,
   getBlogs,
   getBlogById,
+  getBlogsBySearchParams,
 } from '../controllers/blog.controller'
 import { auth } from '../middlewares/auth.middleware'
 import { checkAdmin } from '../middlewares/admin.guard'
@@ -17,6 +18,7 @@ router.delete('/delete/:blogId', auth, deleteBlogById)
 router.put('/update/:blogId', auth, updateBlogById)
 router.get('/fetch', checkAdmin, getBlogs)
 router.get('/fetch/:id', checkAdmin, getBlogById)
+router.get("/", getBlogsBySearchParams)
 
 //comment route
 router.post('/:blogId/comments', auth, createComment)
