@@ -22,6 +22,9 @@ export class Blog {
   @Column({ type: 'text' })
   content: string
 
+  @Column({ type: 'text' })
+  tags: string
+
   @ManyToOne(() => User, (user) => user.blogs, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
   author: User
