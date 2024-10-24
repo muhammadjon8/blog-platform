@@ -7,6 +7,7 @@ import {
 } from 'typeorm'
 import bcrypt from 'bcrypt'
 import { Blog } from './blog.entity'
+import { Comment } from './comment.entity'
 
 @Entity()
 export class User {
@@ -27,6 +28,12 @@ export class User {
 
   @Column({ default: false })
   isAdmin: boolean
+
+  @Column({ default: 'user' })
+  role: string
+
+  @OneToMany(() => Comment, (comment) => comment.author)
+  comments: Comment[]
 
   @BeforeInsert()
   async hashPassword() {
