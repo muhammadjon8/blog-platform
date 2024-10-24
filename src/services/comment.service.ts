@@ -68,9 +68,6 @@ export class CommentService {
     const comment = await this.commentRepo.findOne({
       where: {
         id: commentId,
-        blog: {
-          id: blogId,
-        },
       },
     })
 
