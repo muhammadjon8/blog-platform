@@ -93,7 +93,7 @@ export const getBlogById = async (req: any, res: any) => {
     } else {
       return res.status(400).json({ message: (error as any).message })
     }
-  }
+  } 
 }
 export const getBlogsBySearchParams = async (req: any, res: any) => {
   const page = req.query.page || 1
