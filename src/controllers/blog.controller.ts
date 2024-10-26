@@ -1,6 +1,7 @@
 import BlogService from '../services/blogs.services'
 import { BlogsSearchParamsDto } from '../dtos/blog.searchparams.dto'
-
+import { Request, Response } from 'express'
+import blogsServices from '../services/blogs.services'
 
 export const createBlog = async (req: any, res: any) => {
   try {
@@ -10,7 +11,6 @@ export const createBlog = async (req: any, res: any) => {
       return res.status(400).json({ message: 'Title and content are required' })
     }
 
-    
     const blog = await BlogService.createBlog(req, req.body)
     return res
       .status(201)
@@ -19,7 +19,6 @@ export const createBlog = async (req: any, res: any) => {
     return res.status(400).json({ message: (error as any).message })
   }
 }
-
 
 export const updateBlogById = async (req: any, res: any) => {
   try {
@@ -32,7 +31,6 @@ export const updateBlogById = async (req: any, res: any) => {
         .json({ message: 'Blog ID, title, and content are required' })
     }
 
-    
     const blog = await BlogService.updateBlog(req, +blogId, title, content)
     return res
       .status(200)
@@ -96,5 +94,29 @@ export const getBlogById = async (req: any, res: any) => {
     } else {
       return res.status(400).json({ message: (error as any).message })
     }
+  }
+}
+export const getBlogsBySearchParams = async (req: any, res: any) => {
+  const page = req.query.page || 1
+  const limit = req.query.limit || 10
+  const title = req.query.title as string
+  const tags = req.query.tags as string
+  const content = req.query.content as string
+
+  // Handle tags as a comma-separated string and split into an array
+  const tagsArray = tags ? tags.split(',') : undefined
+
+  // Construct search parameters
+  const searchParams = { title, tags: tagsArray, content }
+
+  try {
+    const blogs = await blogsServices.getBlogsBySearchParams(
+      +page,
+      +limit,
+      searchParams,
+    )
+    return res.status(200).json(blogs)
+  } catch (error) {
+    return res.status(500).json({ message: 'Error fetching blogs', error })
   }
 }
