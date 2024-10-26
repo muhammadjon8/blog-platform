@@ -7,6 +7,8 @@ import {
   UpdateDateColumn,
   JoinColumn,
   OneToMany,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm'
 import { User } from './user.entity'
 import { Comment } from './comment.entity'
@@ -24,6 +26,10 @@ export class Blog {
 
   @Column({ type: 'jsonb', nullable: true })
   tags: string[]
+
+  @ManyToMany(() => User, (user) => user.likedBlogs, { eager: true })
+  @JoinTable()
+  likes: User[]
 
   @ManyToOne(() => User, (user) => user.blogs, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
