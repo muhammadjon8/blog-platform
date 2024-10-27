@@ -8,8 +8,8 @@ export function sendCookies(
 ) {
   res.cookie(name, data, {
     httpOnly: true,
-    secure: true,
-    sameSite: 'none',
+    sameSite: 'strict',
     maxAge: age,
+    secure: process.env.NODE_ENV === 'production',
   })
 }
