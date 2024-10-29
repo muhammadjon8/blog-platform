@@ -22,7 +22,6 @@ export const checkAdmin = (
   }
 
   try {
-    // Decode the token and cast it to a known type
     const decoded = jwt.verify(token, jwtSecret) as {
       userId: string,
       role: string
@@ -41,7 +40,7 @@ export const checkAdmin = (
 
     next()
   } catch (error) {
-    console.error('Token verification error:', error) // Log the error for debugging
+    console.error('Token verification error:', error) 
     return res.status(401).json({ message: 'Invalid token' })
   }
 }
