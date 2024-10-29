@@ -71,7 +71,7 @@ export const getBlogs = async (req: any, res: any) => {
       .status(200)
       .json({ data: blogs, message: 'Blogs retrieved successfully' })
   } catch (error) {
-    return res.status(400).json({ message: (error as any).message })
+    return res.json({ message: (error as any).message })
   }
 }
 

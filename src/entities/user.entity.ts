@@ -5,6 +5,7 @@ import {
   BeforeInsert,
   OneToMany,
   ManyToMany,
+  BeforeUpdate,
 } from 'typeorm'
 import bcrypt from 'bcrypt'
 import { Blog } from './blog.entity'
@@ -42,6 +43,7 @@ export class User {
   likedBlogs: Blog[]
 
   @BeforeInsert()
+  @BeforeUpdate()
   async hashPassword() {
     if (typeof this.password !== 'string') {
       throw new Error('Password must be a string')
