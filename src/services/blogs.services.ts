@@ -1,12 +1,11 @@
 import { Blog } from '../entities/blog.entity'
 import { User } from '../entities/user.entity'
 import { AppDataSource } from '../data-source'
-import { BlogsSearchParamsDto } from '../dtos/blog.searchparams.dto'
-import { FindManyOptions } from 'typeorm'
 import { CreateBlogDto } from '../dtos/createBlog.dto'
 import * as jwt from 'jsonwebtoken'
-import { Request } from 'express'
+import { Request, Response } from 'express'
 import CustomJwtPayload from '../utils/customJwtPayload'
+import { plainToInstance } from 'class-transformer'
 
 class BlogService {
   private userRepo = AppDataSource.getRepository(User)
@@ -92,20 +91,25 @@ class BlogService {
     await this.blogRepo.delete(blogId)
   }
 
-  async getBlogs(searchParams: BlogsSearchParamsDto): Promise<Blog[]> {
-    const page = searchParams.page || 1
-    const limit = searchParams.limit || 10
+  async getAllBlogs(res: Response) {
+    try {
+      const blogs = await this.blogRepo.find({
+        relations: ['likes'],
+      })
 
-    const options: FindManyOptions<Blog> = {
-      skip: (page - 1) * limit,
-      take: limit,
+      return res.status(200).json(blogs)
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ message: 'Failed to retrieve blogs', error })
     }
-
-    return await this.blogRepo.find(options)
   }
 
   async getBlog(id: string): Promise<Blog> {
-    const blog = await this.blogRepo.findOne({ where: { id: +id } })
+    const blog = await this.blogRepo.findOne({
+      where: { id: +id },
+      select: ['likes'],
+    })
 
     if (!blog) {
       throw new Error('Blog not found')
@@ -149,6 +153,42 @@ class BlogService {
       total,
       page,
       limit,
+    }
+  }
+  async likeBlogs(blogId: string, req: Request, res: Response) {
+    const authorId = await this.extractUserIdFromToken(req)
+    const author = await this.userRepo.findOne({ where: { id: authorId } })
+    const blog = await this.blogRepo.findOne({
+      where: { id: +blogId },
+      relations: ['likes'],
+    })
+
+    if (!author) {
+      return res.status(404).json({ message: 'User not found' })
+    }
+
+    if (!blog) {
+      return res.status(404).json({ message: 'Blog not found' })
+    }
+
+    const likedBy = blog.likes.some((user) => user.id === authorId)
+
+    if (likedBy) {
+      blog.likes = blog.likes.filter((user) => user.id !== authorId)
+    } else {
+      blog.likes.push(author)
+    }
+
+    try {
+      await this.blogRepo.save(blog)
+      const transformedBlog = plainToInstance(Blog, blog)
+
+      return res.status(200).json({
+        message: likedBy ? 'Blog unliked' : 'Blog liked',
+        blog: transformedBlog,
+      })
+    } catch (error) {
+      return res.status(500).json({ message: 'Failed to update likes', error })
     }
   }
 }

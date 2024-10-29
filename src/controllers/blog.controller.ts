@@ -65,8 +65,7 @@ export const deleteBlogById = async (req: any, res: any) => {
 
 export const getBlogs = async (req: any, res: any) => {
   try {
-    const searchParams = req.query as unknown as BlogsSearchParamsDto
-    const blogs = await BlogService.getBlogs(searchParams)
+    const blogs = await BlogService.getAllBlogs(res)
 
     return res
       .status(200)
@@ -94,7 +93,7 @@ export const getBlogById = async (req: any, res: any) => {
     } else {
       return res.status(400).json({ message: (error as any).message })
     }
-  }
+  } 
 }
 export const getBlogsBySearchParams = async (req: any, res: any) => {
   const page = req.query.page || 1
@@ -103,10 +102,8 @@ export const getBlogsBySearchParams = async (req: any, res: any) => {
   const tags = req.query.tags as string
   const content = req.query.content as string
 
-  // Handle tags as a comma-separated string and split into an array
   const tagsArray = tags ? tags.split(',') : undefined
 
-  // Construct search parameters
   const searchParams = { title, tags: tagsArray, content }
 
   try {
@@ -118,5 +115,20 @@ export const getBlogsBySearchParams = async (req: any, res: any) => {
     return res.status(200).json(blogs)
   } catch (error) {
     return res.status(500).json({ message: 'Error fetching blogs', error })
+  }
+}
+
+export const likeBlogs = async (req: any, res: any) => {
+  try {
+    const blogId = req.params.blogId
+    if (!blogId) {
+      return res.status(400).json({ message: 'Blog not found' })
+    }
+    const result = await blogsServices.likeBlogs(blogId, req, res)
+
+    return res.status(200).json(result)
+  } catch (e) {
+    console.log(e)
+    return res.status(500).json({ message: 'Error liking/disliking blog' })
   }
 }

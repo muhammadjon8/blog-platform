@@ -6,6 +6,7 @@ import {
   getBlogs,
   getBlogById,
   getBlogsBySearchParams,
+  likeBlogs,
 } from '../controllers/blog.controller'
 import { auth } from '../middlewares/auth.middleware'
 import { checkAdmin } from '../middlewares/admin.guard'
@@ -19,6 +20,7 @@ router.put('/update/:blogId', auth, updateBlogById)
 router.get('/fetch', checkAdmin, getBlogs)
 router.get('/fetch/:id', checkAdmin, getBlogById)
 router.get("/", getBlogsBySearchParams)
+router.post("/:blogId/like", likeBlogs)
 
 //comment route
 router.post('/:blogId/comments', auth, createComment)

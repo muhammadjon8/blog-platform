@@ -4,10 +4,12 @@ import {
   Column,
   BeforeInsert,
   OneToMany,
+  ManyToMany,
 } from 'typeorm'
 import bcrypt from 'bcrypt'
 import { Blog } from './blog.entity'
 import { Comment } from './comment.entity'
+import { Exclude } from 'class-transformer'
 
 @Entity()
 export class User {
@@ -34,6 +36,10 @@ export class User {
 
   @OneToMany(() => Comment, (comment) => comment.author)
   comments: Comment[]
+
+  @ManyToMany(() => Blog, (blog) => blog.likes)
+  @Exclude()
+  likedBlogs: Blog[]
 
   @BeforeInsert()
   async hashPassword() {
