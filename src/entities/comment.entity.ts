@@ -20,5 +20,5 @@ export class Comment {
   blog: Blog
 
   @CreateDateColumn()
-  createdAt: Date
+  createdAt?: Date
 }
